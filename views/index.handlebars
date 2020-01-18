@@ -1,0 +1,104 @@
+<h1>Eat-Da-Burger!</h1>
+
+<h2>Burgers not devoured</h2>
+
+<ul>
+  {{#each burgers}}
+    {{#unless devoured}}
+    <ul>
+      <li>    {{id}}. {{burger_name}}
+     <button class="devour-click" data-id="{{id}}">devour !</button> </li>
+    </ul>
+
+    {{/unless}}
+  {{/each}}
+</ul>
+
+<h2>Burgers that are now devoured</h2>
+
+<ul>
+  {{#each burgers}}
+    {{#if devoured}}
+    <ul>
+      <li>{{burger_name}}</li>
+    </ul>      
+    {{/if}}
+  {{/each}}
+</ul>
+
+<h2>Add a Burger to devour</h2>
+<form class="create-form">
+
+  <div class="form-group">
+    <label for="ca">Burger:</label>
+    <input type="text" id="ca" name="burger">
+      <button type="submit">Submit</button>
+  </div>
+
+
+</form>
+
+
+
+<script type="text/javascript">
+// Make sure we wait to attach our handlers until the DOM is fully loaded.
+$(function() {
+  $(".devour-click").on("click", function(event) {
+    var id = $(this).data("id");
+
+    var newSleepState = {
+      devoured: true
+    };
+
+    // Send the PUT request.
+    $.ajax("/api/burgers/" + id, {
+      type: "PUT",
+      data: newSleepState
+    }).then(
+      function() {
+       // console.log("changed sleep to", devoured);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $(".create-form").on("submit", function(event) {
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    var newBurger = {
+      burger_name: $("#ca").val().trim(),
+      devoured: 0
+    };
+
+    // Send the POST request.
+    $.ajax("/api/burgers", {
+      type: "POST",
+      data: newBurger
+    }).then(
+      function() {
+        console.log("created new cat");
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $(".delete-cat").on("click", function(event) {
+    var id = $(this).data("id");
+
+    // Send the DELETE request.
+    $.ajax("/api/cats/" + id, {
+      type: "DELETE"
+    }).then(
+      function() {
+        console.log("deleted cat", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+});
+
+</script>
